@@ -1,3 +1,5 @@
 .venv/
 
 .venv/*
+# Ignore MySQL data folder
+Lecture_05/two-tier-flask-app/mysql-data/

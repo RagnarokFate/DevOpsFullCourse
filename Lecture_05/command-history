@@ -1,0 +1,67 @@
+docker run -d --name nexus -p 8081:8081 -p 5000:5000 sonatype/nexus3
+
+docker exec -it nexus cat /nexus-data/admin.password
+
+DockerDesktop > Settings > DockerEngine :
+  {
+  "builder": {
+    "gc": {
+      "defaultKeepStorage": "20GB",
+      "enabled": true
+    }
+  },
+  "experimental": false,
+  "insecure-registries": [
+    "localhost:5000",
+    "localhost:5001"
+  ]
+}
+
+
+localhost:8081(Nexus Repository) > Login > admin + password > set new password > continue ...
+  Settings > security > realms > Local authenticating + Default Role Realm + Docker Bearer Token Realm > Save
+
+
+
+localhost:8081(Nexus Repository) > Settings > Repositories > Create repository > docker (hosted) >
+  Name: my-docker-repo
+  HTTP: 5000
+  Blob store: default
+  Storage format: v2 (recommended)
+  Enable write policy: Allow
+  Docker Index: (checked)
+  Save
+
+
+cmd > docker login localhost:5000 > admin + new_password > "login succeded"
+
+  username: admin,
+  password: 8c9cc59b-8974-4243-92d2-d4402cd0ec4a
+
+cmd > cd ./app/ &&
+  docker compose build my-app
+  docker tag my-app:1.0 localhost:5000/myteam/my-app:1.0
+  docker push localhost:5000/myteam/my-app:1.0
+
+
+===
+# TASK After break: 
+
+Task:
+  1. Pull up nexusv3 container
+  2. Login to Nexus Repository
+  3. Build and push Docker image of flask-project.zip
+  4. Deploy the application using Docker Compose
+  5. Verify the deployment
+
+
+  docker build -t localhost:5000/flaskapp:1.0 .
+  docker push localhost:5000/flaskapp:1.0
+
+  problem resulted due to port 5000 already being used by another application
+  solution: change the internal port to 6000 and in the app.py file
+  # app.run(host='0.0.0.0', port=6000)
+
+
+
+
